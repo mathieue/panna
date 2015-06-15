@@ -1,5 +1,7 @@
 var http = require('http')
-  , server = http.createServer();
+  , server = http.createServer(function(req,res){
+	res.setHeader('Access-Control-Allow-Origin', '*'); 
+});
 
 server.on('request', function (serverReq,
     serverResp) {
@@ -17,6 +19,7 @@ server.on('request', function (serverReq,
 
 
   serverReq.headers.host = host;
+
   opts = {
     host: host
   , port: port
