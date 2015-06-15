@@ -1,3 +1,9 @@
+
+d3.json('http://127.0.0.1:4000/la_mine/_design/measures/_view/by_date?limit=20&descending=true',
+	function(err,data) {
+		console.log(data);
+	})
+
 var width = 600,
 	height = 600;
 
