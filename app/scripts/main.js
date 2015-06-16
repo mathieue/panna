@@ -1,31 +1,45 @@
 
-d3.json('http://127.0.0.1:4000/la_mine/_design/measures/_view/by_date?limit=20&descending=true',
-	function(err,data) {
-		console.log(data);
-	})
-
-var width = 600,
-	height = 600;
-
-var r = 6, padding = 4;
-
-// i want a matrix
 var data = [];
-for (var i = 0; i < 100; i++) {
-	for (var j = 0; j < 100; j++) {
-		data.push({x: i, y: j});	
-	};
-	
-};
 
-var svg = d3.select("svg")
-	.attr("width", width)
-	.attr("height", height);
+function display(data) {
 
-var circle = svg.selectAll("circle")
-    .data(data);
+		var width = 1600,
+			height = 60;
 
-var circleEnter = circle.enter().append("circle");
-circleEnter.attr("cx", function(d, i) { return d.x * r + r / 2; });
-circleEnter.attr("cy", function(d, i) { return d.y * r + r / 2; });
-circleEnter.attr("r", r - padding);
+		var barWidth = 1
+			, barHeight =height
+			, padding = 0;
+
+		var linearScale = d3.scale.linear()
+			.domain([d3.min(data), d3.max(data)])
+			.range([0, barHeight]);
+
+
+		var svg = d3.select("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+		var bar = svg.selectAll("rect")
+		    .data(data);
+
+		var barEnter = bar.enter().append("rect");
+		barEnter.attr("x", function(d, i) { return i * (barWidth + padding) + padding; });
+		barEnter.attr("width", barWidth);
+		barEnter.attr("y",  function(d, i) { return barHeight - linearScale(d) });
+		barEnter.attr("height", function(d, i) { return barHeight });
+
+}
+
+// 288 points per day
+var points = 288 * 5;
+d3.json('http://127.0.0.1:4000/la_mine/_design/measures/_view/by_date?limit=' + points +'&descending=true',
+	function(err,json) {
+		console.log(json['rows']);
+		data = json['rows'].map(function(d) {
+			console.log(new Date(d.key));
+			return d.value.value;
+		})
+
+		display(data);
+
+	})
